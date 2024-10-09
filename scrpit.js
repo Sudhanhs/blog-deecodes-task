@@ -1,130 +1,92 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.getElementById("blogForm").addEventListener("submit", saveBlog);
 
-  // Initialize Quill
-  const quill = new Quill('#editor', {
-    theme: 'snow',
-    modules: {
-      toolbar: [
-        ['bold', 'italic', 'underline'], 
-        ['blockquote', 'code-block'],
-        [{ 'header': 1 }, { 'header': 2 }], 
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }], 
-        [{ 'indent': '-1'}, { 'indent': '+1' }], 
-        [{ 'size': ['small', false, 'large', 'huge'] }], 
-        [{ 'color': [] }, { 'background': [] }], 
-        [{ 'font': [] }],
-        ['link', 'image', 'clean'] 
-      ]
-    }
+function saveBlog(e) {
+  e.preventDefault();
+
+  const title = document.getElementById("title").value;
+  const imageInput = document.getElementById("image");
+  const description = document.getElementById("description").value;
+  const category = document.querySelector('input[name="category"]:checked').value;
+
+  const reader = new FileReader();
+  reader.onload = function () {
+    const image = reader.result;
+
+    const blog = { title, image, description, category };
+    const blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+    blogs.push(blog);
+    localStorage.setItem("blogs", JSON.stringify(blogs));
+
+    displayBlogs();
+  };
+  reader.readAsDataURL(imageInput.files[0]);
+
+  document.getElementById("blogForm").reset();
+}
+
+function displayBlogs() {
+  const blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+  const blogTable = document.querySelector("#blogTable tbody");
+  blogTable.innerHTML = "";
+
+  blogs.forEach((blog, index) => {
+    const row = blogTable.insertRow();
+    row.innerHTML = `
+      <td>${blog.title}</td>
+      <td><img src="${blog.image}" alt="${blog.title}" width="50"></td>
+      <td>${blog.description} width="30px"</td>
+      <td>${blog.category}</td>
+      <td>
+    <button style="background-color: blue; color: white;" onclick="editBlog(${index})">Edit</button>
+    <button style="background-color: red; color: white;" onclick="deleteBlog(${index})">Delete</button>
+</td>
+    `;
   });
+}
 
-  // For saving a new blog post
-  const blogForm = document.getElementById('blogForm');
-  let blogPosts = JSON.parse(localStorage.getItem('blogPosts')) || []; 
+function editBlog(index) {
+  const blogs = JSON.parse(localStorage.getItem("blogs"));
+  const blog = blogs[index];
 
-  if (blogForm) {
-    blogForm.addEventListener('submit', (event) => {
-      event.preventDefault();
+  document.getElementById("title").value = blog.title;
+  document.getElementById("description").value = blog.description;
+  document.querySelector(`input[name="category"][value="${blog.category}"]`).checked = true;
 
-      const title = document.getElementById('title').value;
-      const image = document.getElementById('image').files[0];
-      const description = document.getElementById('description').value;
-      const content = quill.root.innerHTML; 
+  localStorage.setItem("editIndex", index);
+}
 
-      // Validate title
-      if (title.length > 10) {
-        alert('Title can only be a maximum of 10 characters.');
-        return;
-      }
+function deleteBlog(index) {
+  const blogs = JSON.parse(localStorage.getItem("blogs"));
+  blogs.splice(index, 1);
+  localStorage.setItem("blogs", JSON.stringify(blogs));
 
-      // Validate image size
-      if (image && image.size > 1 * 1024 * 1024) {
-        alert('Image file size must be less than 1 MB.');
-        return;
-      }
+  displayBlogs();
+}
 
-      // Validate description length
-      if (description.length > 300) {
-        alert('Description can only be a maximum of 300 characters.');
-        return;
-      }
+window.onload = displayBlogs;
 
-      // Use FileReader to read the image as DataURL
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const photoData = e.target.result;
 
-        const blogPost = {
-          title: title,
-          description: description,
-          content: content, 
-          image: photoData
-        };
 
-        blogPosts.push(blogPost);
-        localStorage.setItem('blogPosts', JSON.stringify(blogPosts));
 
-        alert('Blog post saved!');
-        blogForm.reset();
-        quill.setContents([]); 
-        displayBlogs(blogPosts); 
-      };
-
-      if (image) {
-        reader.readAsDataURL(image); 
-      }
-    });
-  }
-
-  // For displaying blog posts on the cards page
-  const blogCards = document.getElementById('blogCards');
-  if (blogCards) {
-    const displayBlogs = (posts) => {
-      blogCards.innerHTML = '';
-      posts.forEach((post) => {
-        const card = document.createElement('div');
-        card.classList.add('card');
-
-        card.innerHTML = `
-          <img src="${post.image}" alt="${post.title}">
-          <h3>${post.title}</h3>
-          <p>${post.description}</p>
-        `;
-
-        // Render the content as HTML
-        const viewbtn = document.createElement('button');
-        viewbtn.innerHTML = 'View';
-        card.appendChild(viewbtn);
-
-        // Open modal when View button is clicked
-        viewbtn.addEventListener('click', () => {
-          showModal(post.title, post.content); 
-        });
-
-        blogCards.appendChild(card);
-      });
-    };
-
-    // Initial display of all blogs
-    displayBlogs(blogPosts);
-
-    // Function to filter blogs
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.toLowerCase();
-        const filteredPosts = blogPosts.filter((post) => {
-          return (
-            post.title.toLowerCase().includes(query) ||
-            post.description.toLowerCase().includes(query)
-          );
-        });
-        displayBlogs(filteredPosts); 
-      });
-    }
+// Initialize Quill
+const quill = new Quill('#editor', {
+  theme: 'snow',
+  modules: {
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      ['blockquote', 'code-block'],
+      [{ 'header': 1 }, { 'header': 2 }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      [{ 'script': 'sub' }, { 'script': 'super' }],
+      [{ 'indent': '-1' }, { 'indent': '+1' }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'font': [] }],
+      ['link', 'image', 'clean']
+    ]
   }
 });
+
 
 // Modal-related functions
 const showModal = (title, content) => {
@@ -132,16 +94,16 @@ const showModal = (title, content) => {
   const modalTitle = document.getElementById('modalTitle');
   const modalContent = document.getElementById('modalContent');
 
-  modalTitle.innerHTML = title;       
-  modalContent.innerHTML = content;   
+  modalTitle.innerHTML = title;
+  modalContent.innerHTML = content;
 
-  modal.style.display = 'block';      
+  modal.style.display = 'block';
 };
 
 // Close modal when "X" is clicked
 const closeModal = () => {
   const modal = document.getElementById('modal');
-  modal.style.display = 'none';       
+  modal.style.display = 'none';
 };
 
 // Close modal when clicking outside of modal content

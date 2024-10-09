@@ -1,16 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Blog Posts</title>
   <link rel="stylesheet" href="./style.css">
   <!-- Quill CSS -->
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
-<!-- Quill JS -->
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+  <style>
+    #blogCards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 20px;
+      justify-content: center;
+    }
+
+    .blog-card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      width: 300px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .blog-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .blog-card h2 {
+      font-size: 1.2em;
+      color: #333;
+      margin: 15px 0;
+    }
+
+    .blog-card p {
+      padding: 0 15px;
+      font-size: 0.95em;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .blog-card span {
+      display: inline-block;
+      background-color: #007BFF;
+      color: #fff;
+      font-size: 0.85em;
+      padding: 5px 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+  </style>
 
 </head>
+
 <body>
   <header>
     <h1>All Blog Posts</h1>
@@ -21,19 +76,58 @@
   </header>
 
   <main>
-        <input type="text" id="searchInput" class="Search-1" placeholder="Search blogs..." style="    width: 80%;
+    <input type="text" id="searchInput" class="Search-1" placeholder="Search blogs..." style="    width: 80%;
     position: relative;top: 11px;">
-    <div id="blogCards"></div>
   </main>
 
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="closeModal">&times;</span>
-    <h2 id="modalTitle"></h2>
-    <div id="modalContent"></div>
+  <div id="blogCards">
   </div>
-</div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2 id="modalTitle"></h2>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    function displayBlogCards(filter = "") {
+    const blogs = JSON.parse(localStorage.getItem("blogs")) || [];
+    const blogCards = document.getElementById("blogCards");
+
+    // Filter blogs based on search input
+    const filteredBlogs = blogs.filter(blog =>
+      blog.title.toLowerCase().includes(filter.toLowerCase()) || 
+      blog.description.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    blogCards.innerHTML = filteredBlogs.map(blog => `
+  <div class="blog-card">
+    <img src="${blog.image}" alt="${blog.title}" width="100">
+    <h2>${blog.title}</h2> 
+    <p>${blog.description}</p>
+    <button onclick="viewBlog('${blog.id}')">View</button>
+  </div>
+`).join("");
+}
+
+function viewBlog(blogId) {
+  window.location.href = `view.html?id=${blogId}`;
+}
+
+  // Add event listener for search input
+  const searchInput = document.getElementById("searchInput");
+  searchInput.addEventListener("input", (event) => {
+    displayBlogCards(event.target.value);
+  });
+
+  // Initial display of blog cards on page load
+  window.onload = () => displayBlogCards();
+
+  </script>
+  <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
   <script src="./scrpit.js"></script>
 </body>
-</html>
 
+</html>

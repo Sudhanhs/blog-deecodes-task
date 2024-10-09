@@ -8,23 +8,26 @@
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
   <style>
     table {
-        width: 40%;
-        border-collapse: collapse;
-        float: right;
-        margin-top: 30px;
-        margin-left: 10px;
-        position: relative;
-        left: -43px;
+      width: 40%;
+      border-collapse: collapse;
+      float: right;
+      margin-top: 68px;
+      margin-left: 10px;
+      position: relative;
+      left: -43px;
     }
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
     }
+
     th {
-        background-color: #f2f2f2;
+      background-color: #f2f2f2;
     }
-</style>
+  </style>
 </head>
 
 <body>
@@ -45,38 +48,37 @@
 
       <label for="description">Description:</label>
       <textarea id="description" rows="4" required></textarea>
-      <button type="submit" >Save Blog</button>
+      <button type="submit">Save Blog</button>
     </form>
-
-    <table id="blogTable">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Image</th>
-                <th>Description</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
   </main>
 
-  <div id="editor">
-   
-  </div>
+  <div id="editor"></div>
 
   <div class="right-btn">
-  <h1 class="cat-h1">Category</h1>
-  <form id="Category">
-    <label><input type="radio" name="category" value="Technology">Technology</label><br>
-    <label><input type="radio" name="category" value="Health">Health</label><br>
-    <label><input type="radio" name="category" value="Travel">Travel</label><br>
-    <label><input type="radio" name="category" value="Lifestyle">Lifestyle</label><br>
-    <label><input type="radio" name="category" value="Finance"> Finance</label><br>
-    <label><input type="radio" name="category" value="Education">Education</label><br>
+    <h1 class="cat-h1">Category</h1>
+    <form id="Category">
+      <label><input type="radio" name="category" value="Technology">Technology</label><br>
+      <label><input type="radio" name="category" value="Health">Health</label><br>
+      <label><input type="radio" name="category" value="Travel">Travel</label><br>
+      <label><input type="radio" name="category" value="Lifestyle">Lifestyle</label><br>
+      <label><input type="radio" name="category" value="Finance"> Finance</label><br>
+      <label><input type="radio" name="category" value="Education">Education</label><br>
     </form>
-</div>
+  </div>
+
+  <table id="blogTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Image</th>
+        <th>Description</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
   <script src="./scrpit.js"></script>
 </body>
